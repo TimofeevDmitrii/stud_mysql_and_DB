@@ -1,0 +1,351 @@
+1. Лайки
+
+Инструкция по использованию платформы
+
+
+
+Имеется база данных – социальная сеть.
+
+База данных содержит сущности:
+users – пользователи;
+messages – сообщения;
+friend_requests – заявки на дружбу;
+communities – сообщества;
+users_communities – пользователи сообществ;
+media_types – типы медиа;
+media – медиа;
+likes – лайки;
+profiles – профили пользователя.
+
+У сущности «пользователи» имеются следующие поля(атрибуты):
+id – идентификатор;
+firstname – имя;
+lastname - фамилия;
+email - адрес электронной почты.
+
+У сущности «профиль пользователя» имеются следующие поля(атрибуты):
+user_id – идентификатор;
+gender – пол;
+birthday - дата рождения;
+photo_id - аватарка;
+hometown - город.
+
+Атрибут «пол» сущности «профиль пользователя» может принимать следующие значения:
+'f' - женский;
+'m' - мужской.
+
+У сущности «лайки» имеются следующие поля(атрибуты): id – идентификатор;
+user_id – пользователь, который поставил лайк;
+media_id - медиа, который лайкнули.
+
+У сущности «медиа» имеются следующие поля(атрибуты):
+id – идентификатор;
+user_id – пользователь – владелец медиа;
+body - содержимое;
+filename – ссылка на файл;
+created_at - дата создания;
+updated_at - дата последнего обновления.
+
+Найдите общее количество лайков, которые получили пользователи женского пола.
+
+
+Вариант без JOIN
+----- Код --------
+
+-- Вы работаете с MySQL
+-- Введите свой код ниже
+
+SELECT COUNT(user_id) AS total_likes_female FROM likes 
+WHERE media_id IN 
+(SELECT id FROM media WHERE user_id IN 
+(SELECT user_id FROM profiles WHERE gender='f'));
+
+----- Код --------
+
+
+
+С использованием JOIN 
+
+----- Код --------
+
+-- Вы работаете с MySQL
+-- Введите свой код ниже
+
+SELECT COUNT(likes.user_id) FROM likes 
+JOIN media ON likes.media_id = media.id
+JOIN (SELECT * FROM profiles WHERE gender='f') as female_profiles
+ON media.user_id=female_profiles.user_id;
+
+----- Код --------
+
+
+Идеальное решение
+
+----- Код --------
+
+-- Вы работаете с MySQL
+-- Введите свой код ниже
+
+SELECT COUNT(*) -- количество лайков
+FROM likes l
+JOIN media m ON l.media_id = m.id
+JOIN profiles p ON p.user_id = m.user_id
+WHERE p.gender = 'f';
+
+----- Код --------
+
+
+
+
+2. Лайки 2
+
+Инструкция по использованию платформы
+
+
+
+Имеется база данных – социальная сеть.
+
+База данных содержит сущности:
+users – пользователи;
+messages – сообщения;
+friend_requests – заявки на дружбу;
+communities – сообщества;
+users_communities – пользователи сообществ;
+media_types – типы медиа;
+media – медиа;
+likes – лайки;
+profiles – профили пользователя.
+
+У сущности «пользователи» имеются следующие поля(атрибуты):
+id – идентификатор;
+firstname – имя;
+lastname - фамилия;
+email - адрес электронной почты.
+
+У сущности «профиль пользователя» имеются следующие поля(атрибуты):
+user_id – идентификатор;
+gender – пол;
+birthday - дата рождения;
+photo_id - аватарка;
+hometown - город.
+
+Атрибут «пол» сущности «профиль пользователя» может принимать следующие значения:
+'f' - женский;
+'m' - мужской.
+
+У сущности «лайки» имеются следующие поля(атрибуты):
+id – идентификатор;
+user_id – пользователь, который поставил лайк;
+media_id - медиа, который лайкнули.
+
+Найдите количество лайков, которые поставили пользователи женского пола и мужского пола.
+Выведите название пола (преобразовав значение атрибута f в женский, а значение ‘m` - мужской) и количество, поставленных лайков, применив к количеству лайков сортировку по убыванию.
+
+----- Код --------
+
+-- Вы работаете с MySQL
+-- Введите свой код ниже
+
+SELECT 
+CASE
+    WHEN `profiles`.gender = 'f' THEN "женский"
+    WHEN `profiles`.gender = 'm' THEN "мужской"
+END AS "Пол",
+COUNT(likes.id)
+FROM likes
+JOIN `profiles` ON likes.user_id = `profiles`.user_id
+GROUP BY `profiles`.gender
+ORDER BY COUNT(likes.id) DESC;
+
+----- Код --------
+
+
+Идеальное решение
+
+
+----- Код --------
+
+-- Вы работаете с MySQL
+-- Введите свой код ниже
+
+SELECT 
+CASE p.gender
+WHEN 'f' THEN 'женский'
+WHEN 'm' THEN 'мужской'
+END AS gender, 
+COUNT(*) AS cnt
+FROM likes l 
+JOIN profiles p on l.user_id = p.user_id
+GROUP BY p.gender 
+ORDER BY cnt DESC;
+
+----- Код --------
+
+
+
+
+3. Кто не отправлял сообщения
+
+Инструкция по использованию платформы
+
+
+
+Имеется база данных – социальная сеть.
+
+База данных содержит сущности:
+users – пользователи;
+messages – сообщения;
+friend_requests – заявки на дружбу;
+communities – сообщества;
+users_communities – пользователи сообществ;
+media_types – типы медиа;
+media – медиа;
+likes – лайки;
+profiles – профили пользователя.
+У сущности «пользователи» имеются следующие поля(атрибуты):
+id – идентификатор;
+firstname – имя;
+lastname - фамилия;
+email - адрес электронной почты.
+
+У сущности «сообщения» имеются следующие поля(атрибуты):
+id – идентификатор;
+from_user_id – отправитель;
+to_user_id – получатель;
+body - содержимое;
+created_at - дата отправки.
+
+Выведите идентификаторы пользователей, которые не отправляли ни одного сообщения.
+
+
+
+
+----- Код --------
+
+-- Вы работаете с MySQL
+-- Введите свой код ниже
+
+SELECT id FROM users 
+WHERE id NOT IN (SELECT from_user_id FROM messages); 
+
+----- Код --------
+
+
+Другой вариант 
+
+----- Код --------
+
+-- Вы работаете с MySQL
+-- Введите свой код ниже
+
+SELECT users.id
+FROM users
+LEFT JOIN messages
+ON users.id = messages.from_user_id
+WHERE messages.from_user_id IS NULL;
+
+----- Код --------
+
+
+Идеальное решение
+
+
+
+----- Код --------
+
+-- Вы работаете с MySQL
+-- Введите свой код ниже
+
+SELECT 
+u.id
+FROM users u 
+LEFT JOIN messages m on u.id = m.from_user_id
+WHERE m.id IS NULL;
+
+----- Код --------
+
+
+4. Друзья
+
+Инструкция по использованию платформы
+
+
+
+Имеется база данных – социальная сеть.
+
+База данных содержит сущности:
+users – пользователи;
+messages – сообщения;
+friend_requests – заявки на дружбу;
+communities – сообщества;
+users_communities – пользователи сообществ;
+media_types – типы медиа;
+media – медиа;
+likes – лайки;
+profiles – профили пользователя.
+
+У сущности «заявки на дружбу» имеются следующие поля(атрибуты):
+initiator_user_id – инициатор;
+target_user_id – получатель;
+status - статус;
+requested_at - дата создания;
+updated_at - дата последнего обновления.
+
+У сущности «пользователи» имеются следующие поля(атрибуты):
+id – идентификатор;
+firstname – имя;
+lastname - фамилия;
+email - адрес электронной почты.
+
+Друзья — это пользователи у которых имеется соответствующая запись (заявка) в сущности «заявки на дружбу» и в атрибуте status данной сущности указано значение 'approved'.
+
+Найдите количество друзей у каждого пользователя. Выведите для каждого пользователя идентификатор пользователя, имя, фамилию и количество друзей cnt. Сортировка выводимых записей в порядке возрастания идентификатора пользователя.
+
+
+
+----- Код --------
+
+-- Вы работаете с MySQL
+-- Введите свой код ниже
+
+SELECT users.id, users.firstname, users.lastname, COALESCE(SUM(cnt_friends),0) AS cnt
+FROM users
+LEFT JOIN (
+SELECT id, firstname, lastname, COUNT(*) AS cnt_friends
+FROM users JOIN 
+friend_requests ON id = friend_requests.initiator_user_id 
+WHERE `status` = 'approved'
+GROUP BY id
+
+UNION ALL
+
+SELECT id, firstname, lastname, COUNT(*) AS cnt_friends
+FROM users JOIN
+friend_requests ON id = friend_requests.target_user_id 
+WHERE `status` = 'approved'
+GROUP BY id) AS friends_table ON users.id = friends_table.id
+GROUP BY users.id
+ORDER BY users.id;
+
+----- Код --------
+
+
+
+Идеальное решение
+
+----- Код --------
+
+SELECT 
+u.id, 
+u.firstname, 
+u.lastname, 
+COUNT(fr.status) AS cnt 
+FROM users u
+LEFT JOIN friend_requests fr ON (u.id = fr.initiator_user_id or u.id = fr.target_user_id) AND fr.status = 'approved'
+GROUP BY u.id
+ORDER BY u.id;
+
+----- Код --------
+
+
+

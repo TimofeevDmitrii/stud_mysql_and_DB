@@ -1,0 +1,271 @@
+---------- Задание 1 --------------
+
+
+
+Имеется таблица (сущность) с мобильными телефонами mobile_phones.
+У сущности имеются следующие поля(атрибуты):
+id – идентификатор;
+product_name – название;
+manufacturer – производитель;
+product_count – количество;
+price – цена.
+
+Сущность mobile_phones имеет следующие записи:
+| id | product_name | manufacturer | product_count | price | 
+| --- | ------------ | ------------ | ------------- | ----- | 
+| 1 | iPhone X | Apple | 156 | 76000 | 
+| 2 | iPhone 8 | Apple | 180 | 51000 | 
+| 3 | Galaxy S9 | Samsung | 21 | 56000 | 
+| 4 | Galaxy S8 | Samsung | 124 | 41000 | 
+| 5 | P20 Pro | Huawei | 341 | 36000 |
+
+
+********* Код **********
+
+-- Вы работаете с PostgreSQL
+-- Введите свой код ниже
+CREATE TABLE itresume8873122.manufacturer (
+  id SERIAL PRIMARY KEY,
+  name CHARACTER VARYING(20)
+);
+INSERT INTO itresume8873122.manufacturer (name)
+VALUES
+('Apple'),
+('Samsung'),
+('Huawei');
+
+********* Код **********
+
+
+---------- Задание 2 --------------
+Вывод статуса количества мобильных телефонов
+
+Инструкция по использованию платформы
+
+
+
+Имеется таблица (сущность) с мобильными телефонами mobile_phones.
+У сущности имеются следующие поля(атрибуты):
+id – идентификатор;
+product_name – название;
+manufacturer – производитель;
+product_count – количество;
+price – цена.
+
+Сущность mobile_phones имеет следующие записи:
+
+id	product_name	manufacturer	product_count	price
+1	iPhone X	Apple	        156	        76000
+2	iPhone 8	Apple	        180	        51000
+3	Galaxy S9	Samsung	        21	        56000
+4	Galaxy S8	Samsung	        124	        41000
+5	P20 Pro	        Huawei	        341	        36000
+Статусы количества мобильных телефонов (в зависимости от количества): меньше 100 – «little»; от 100 до 300 – «many»; больше 300 – «lots».
+
+Необходимо вывести название, производителя и статус количества для мобильных телефонов.
+
+********* Код **********
+
+-- Вы работаете с MySQL
+-- Введите свой код ниже
+
+SELECT product_name, manufacturer,
+CASE
+    WHEN product_count < 100 
+        THEN 'little'
+    WHEN product_count >= 100 and product_count <= 300
+        THEN 'many'
+    ELSE 'lots'
+END
+FROM mobile_phones; 
+
+
+
+********* Код **********
+
+
+
+
+Проверка задания 2 в MySQL Workbench (проверяю, т.к. в автотестах в таблице количество каждого вида телефона меньше 100):
+
+CREATE DATABASE lesson2;
+ALTER DATABASE lesson2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+USE lesson2;
+CREATE TABLE mobile_phones (
+id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+product_name VARCHAR(30) NOT NULL,
+manufacturer VARCHAR(30) NOT NULL,
+product_count INT DEFAULT 0,
+price DECIMAL 
+);
+INSERT INTO mobile_phones (product_name, manufacturer, product_count, price)
+VALUES
+('iPhone X', 'Apple', 156, 76000),
+('iPhone 8', 'Apple', 180, 51000),
+('Galaxy S9', 'Samsung', 21, 56000),
+('Galaxy S8', 'Samsung', 124, 41000),
+('P20 Pro', 'Huawei', 341, 36000),
+('P20 Pro Max', 'Huawei', 100, 36000);
+
+SELECT product_name, manufacturer,
+CASE
+    WHEN product_count < 100 
+        THEN 'little'
+    WHEN product_count >= 100 and product_count <= 300
+        THEN 'many'
+    ELSE 'lots'
+END AS category
+FROM mobile_phones; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------- Задание 3 --------------
+
+
+Имеется таблица (сущность) с мобильными телефонами mobile_phones.
+У сущности имеются следующие поля(атрибуты):
+id – идентификатор;
+product_name – название;
+manufacturer – производитель;
+product_count – количество;
+price – цена.
+Сущность mobile_phones имеет следующие записи:
+id
+product_name
+manufacturer
+product_count
+price
+1
+iPhone X
+Apple
+156
+76000
+2
+iPhone 8
+Apple
+180
+51000
+3
+Galaxy S9
+Samsung
+21
+56000
+4
+Galaxy S8
+Samsung
+124
+41000
+5
+P20 Pro
+Huawei
+341
+36000
+Имеется таблица-справочник (сущность) производителей manufacturer.
+У сущности имеются следующие поля(атрибуты):
+id – идентификатор;
+name – название.
+Сущность manufacturer имеет следующие записи:
+id
+name
+1
+Apple
+2
+Samsung
+3
+Huawei
+Создайте для сущности mobile_phones внешний ключ manufacturer_id (идентификатор производителя), направленный на атрибут id сущности manufacturer. Установите каскадное обновление - CASCADE, а при удалении записи из сущности manufacturer – SET NULL.
+Используя CRUD-операцию UPDATE обновите данные в атрибуте manufacturer_id сущности mobile_phones согласно значений, имеющихся в атрибуте manufacturer.
+Удалите атрибут manufacturer из сущности mobile_phones.
+Выведите идентификатор, название и идентификатор производителя сущности mobile_phones.
+
+
+********* Код **********
+
+-- Вы работаете с PostgreSQL
+-- Введите свой код ниже
+ALTER TABLE itresume8873122.mobile_phones
+ADD COLUMN manufacturer_id INT;
+
+ALTER TABLE itresume8873122.mobile_phones
+ADD FOREIGN KEY (manufacturer_id) REFERENCES itresume8873122.manufacturer (id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+UPDATE itresume8873122.mobile_phones SET manufacturer_id = 1 WHERE manufacturer = 'Apple';
+UPDATE itresume8873122.mobile_phones SET manufacturer_id = 2 WHERE manufacturer = 'Samsung';
+UPDATE itresume8873122.mobile_phones SET manufacturer_id = 3 WHERE
+manufacturer = 'Huawei';
+
+ALTER TABLE itresume8873122.mobile_phones
+DROP COLUMN manufacturer;
+
+
+DELETE FROM itresume8873122.manufacturer;
+
+SELECT id, product_name, manufacturer_id FROM itresume8873122.mobile_phones;
+********* Код **********
+
+
+*******Идеальное решение***********
+-- Добавление внешнего ключа в таблицу mobile_phones
+ALTER TABLE mobile_phones
+ADD COLUMN manufacturer_id BIGINT,
+ADD CONSTRAINT fk_manufacturer
+    FOREIGN KEY (manufacturer_id)
+    REFERENCES manufacturers(id)
+    ON UPDATE CASCADE ON DELETE SET NULL;
+
+-- Обновление значения manufacturer_id в таблице mobile_phones на основе поля manufacturer
+UPDATE mobile_phones SET manufacturer_id = 1 WHERE manufacturer = 'Apple';
+UPDATE mobile_phones SET manufacturer_id = 2 WHERE manufacturer = 'Samsung';
+UPDATE mobile_phones SET manufacturer_id = 3 WHERE manufacturer = 'Huawei';
+
+-- Удаление атрибута manufacturer из таблицы mobile_phones
+ALTER TABLE mobile_phones
+DROP COLUMN manufacturer;
+
+-- Вывод id, product_name и manufacturer_id из таблицы mobile_phones
+SELECT id, product_name, manufacturer_id FROM mobile_phones;
+
+*******Идеальное решение***********
+
+
+
+
+
+
+---------- Задание 4 --------------
+
+
+Имеется таблица (сущность) с заказами orders.
+У сущности имеются следующие поля(атрибуты):
+id – идентификатор;
+mobile_phones_id – идентификатор мобильного телефона;
+order_status - статус.
+idmobile_phones_idorder_status11OPEN21OPEN31CLOSED44OPEN54CANCELLEDПодробное описание статусов заказа:
+OPEN – «Order is in open state» ;
+CLOSED - «Order is closed»;
+CANCELLED - «Order is cancelled»
+Необходимо вывести идентификатор и подробное описание статуса заказа.
+
+********* Код **********
+-- Вы работаете с MySQL
+-- Введите свой код ниже
+
+SELECT id,
+CASE order_status
+    WHEN 'OPEN' THEN 'Order is in open state'
+    WHEN 'CLOSED' THEN 'Order is closed'
+    WHEN 'CANCELLED' THEN 'Order is cancelled'
+END as full_order_status
+FROM orders;
+********* Код **********
+
